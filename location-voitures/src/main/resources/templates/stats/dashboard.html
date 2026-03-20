@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Statistiques</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f6f9; }
+        .container { width: 90%; margin: 35px auto; }
+        h2 { text-align: center; color: #1e3a8a; margin-bottom: 30px; }
+        h3 { color: #1e3a8a; margin: 30px 0 16px; }
+        .stats-grid { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
+        .card { background: white; width: 200px; padding: 22px; text-align: center; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+        .card h4 { color: #2563eb; margin-bottom: 10px; font-size: 14px; }
+        .card p { font-size: 28px; font-weight: bold; margin: 0; color: #111827; }
+        .card.highlight p { color: #2563eb; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.06); }
+        th, td { padding: 14px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+        th { background: #1e3a8a; color: white; }
+        tr:hover { background: #f9fafb; }
+        .back-link { display: block; text-align: center; margin-top: 28px; text-decoration: none; color: #1e3a8a; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/menu :: menu"></div>
+<div class="container">
+    <h2>Tableau de bord — Statistiques</h2>
+
+    <h3>🚗 Parc automobile</h3>
+    <div class="stats-grid">
+        <div class="card">
+            <h4>Total voitures</h4>
+            <p th:text="${totalVoitures}"></p>
+        </div>
+        <div class="card">
+            <h4>Disponibles</h4>
+            <p style="color:#059669;" th:text="${voituresDisponibles}"></p>
+        </div>
+        <div class="card">
+            <h4>Indisponibles</h4>
+            <p style="color:#dc2626;" th:text="${voituresIndisponibles}"></p>
+        </div>
+        <div class="card highlight">
+            <h4>Taux d'occupation</h4>
+            <p th:text="${tauxOccupation + ' %'}"></p>
+        </div>
+    </div>
+
+    <h3>📋 Locations</h3>
+    <div class="stats-grid">
+        <div class="card">
+            <h4>Total locations</h4>
+            <p th:text="${totalLocations}"></p>
+        </div>
+        <div class="card">
+            <h4>En cours</h4>
+            <p style="color:#d97706;" th:text="${locationsEnCours}"></p>
+        </div>
+        <div class="card">
+            <h4>Terminées</h4>
+            <p style="color:#059669;" th:text="${locationsTerminees}"></p>
+        </div>
+        <div class="card">
+            <h4>Clients</h4>
+            <p th:text="${totalClients}"></p>
+        </div>
+        <div class="card highlight">
+            <h4>Revenus totaux (MAD)</h4>
+            <p th:text="${totalRevenus}"></p>
+        </div>
+    </div>
+
+    <h3>💰 Revenus par marque</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Marque</th>
+            <th>Revenus (MAD)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${revenusParMarque}">
+            <td th:text="${entry.key}"></td>
+            <td th:text="${entry.value}"></td>
+        </tr>
+        <tr th:if="${#maps.size(revenusParMarque) == 0}">
+            <td colspan="2" style="color:#6b7280;">Aucune donnée disponible</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a class="back-link" th:href="@{/}">← Retour à l'accueil</a>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

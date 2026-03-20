@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des locations</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f8fafc; }
+        .container { width: 96%; margin: 30px auto; }
+        h2 { color: #1e3a8a; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { background: #2563eb; color: white; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; }
+        .btn:hover { background: #1d4ed8; }
+        .filter-box { background: white; padding: 16px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+        .filter-box input, .filter-box select, .filter-box button { padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; margin-right: 8px; }
+        .filter-box button { background: #0f172a; color: white; border: none; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.06); }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        th { background: #1e3a8a; color: white; }
+        tr:hover { background: #f9fafb; }
+        .action { text-decoration: none; font-weight: bold; margin: 0 4px; }
+        .edit { color: #2563eb; }
+        .delete { color: #dc2626; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .en-cours { background: #fef3c7; color: #92400e; }
+        .terminee { background: #d1fae5; color: #065f46; }
+        .annulee { background: #fee2e2; color: #991b1b; }
+        .back-link { display: inline-block; margin-top: 18px; text-decoration: none; color: #1e3a8a; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/menu :: menu"></div>
+<div class="container">
+    <div class="top-bar">
+        <h2>Liste des locations</h2>
+        <a class="btn" th:href="@{/locations/new}">+ Nouvelle location</a>
+    </div>
+    <div class="filter-box">
+        <form th:action="@{/locations}" method="get">
+            <select name="statut">
+                <option value="">-- Statut --</option>
+                <option value="en cours" th:selected="${statut == 'en cours'}">En cours</option>
+                <option value="terminée" th:selected="${statut == 'terminée'}">Terminée</option>
+                <option value="annulée" th:selected="${statut == 'annulée'}">Annulée</option>
+            </select>
+            <input type="date" name="debut" th:value="${debut}">
+            <input type="date" name="fin" th:value="${fin}">
+            <button type="submit">Filtrer</button>
+            <a th:href="@{/locations}" style="color:#1e3a8a; text-decoration:none; margin-left:8px;">Réinitialiser</a>
+        </form>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Client</th>
+            <th>Voiture</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Montant (MAD)</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${locations}">
+            <td th:text="${l.id}"></td>
+            <td th:text="${l.client != null ? l.client.nom : '-'}"></td>
+            <td th:text="${l.voiture != null ? l.voiture.marque + ' - ' + l.voiture.immatriculation : '-'}"></td>
+            <td th:text="${l.dateDebut}"></td>
+            <td th:text="${l.dateFin}"></td>
+            <td th:text="${l.montantTotal != null ? l.montantTotal : '-'}"></td>
+            <td>
+                <span th:class="${'badge ' + (l.statut == 'en cours' ? 'en-cours' : (l.statut == 'terminée' ? 'terminee' : 'annulee'))}"
+                      th:text="${l.statut}"></span>
+            </td>
+            <td>
+                <a class="action edit" th:href="@{/locations/edit/{id}(id=${l.id})}">Modifier</a>
+                <a class="action" style="color:#059669;"
+                   th:href="@{/locations/statut/{id}(id=${l.id},statut='terminée')}"
+                   onclick="return confirm('Marquer comme terminée ?')">✔</a>
+                <a class="action" style="color:#f59e0b;"
+                   th:href="@{/locations/statut/{id}(id=${l.id},statut='annulée')}"
+                   onclick="return confirm('Annuler cette location ?')">✖</a>
+                <a class="action delete" th:href="@{/locations/delete/{id}(id=${l.id})}"
+                   onclick="return confirm('Supprimer cette location ?')">Supprimer</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a class="back-link" th:href="@{/}">← Retour à l'accueil</a>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

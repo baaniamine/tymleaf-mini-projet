@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire Location</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f8fafc; }
+        .container { width: 580px; margin: 35px auto; background: white; padding: 30px; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #1e3a8a; margin-bottom: 25px; }
+        label { display: block; margin-top: 14px; margin-bottom: 6px; font-weight: bold; }
+        input, select { width: 100%; padding: 11px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; }
+        .note { font-size: 13px; color: #6b7280; margin-top: 6px; }
+        button { width: 100%; margin-top: 22px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .back-link { display: block; text-align: center; margin-top: 16px; text-decoration: none; color: #1e3a8a; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/menu :: menu"></div>
+<div class="container">
+    <h2 th:text="${location.id == null} ? 'Nouvelle location' : 'Modifier la location'"></h2>
+    <form th:action="@{/locations/save}" th:object="${location}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <label>Client</label>
+        <select name="clientId" required>
+            <option value="">-- Choisir un client --</option>
+            <option th:each="c : ${clients}"
+                    th:value="${c.id}"
+                    th:text="${c.nom + ' - ' + c.cin}"
+                    th:selected="${location.client != null and location.client.id == c.id}">
+            </option>
+        </select>
+
+        <label>Voiture (disponibles)</label>
+        <select name="voitureId" required>
+            <option value="">-- Choisir une voiture --</option>
+            <option th:each="v : ${voitures}"
+                    th:value="${v.id}"
+                    th:text="${v.marque + ' - ' + v.immatriculation + ' (' + v.prixJour + ' MAD/j)'}"
+                    th:selected="${location.voiture != null and location.voiture.id == v.id}">
+            </option>
+        </select>
+
+        <label>Date de début</label>
+        <input type="date" th:field="*{dateDebut}" required>
+
+        <label>Date de fin</label>
+        <input type="date" th:field="*{dateFin}" required>
+
+        <label>Statut</label>
+        <select th:field="*{statut}">
+            <option value="en cours">En cours</option>
+            <option value="terminée">Terminée</option>
+            <option value="annulée">Annulée</option>
+        </select>
+
+        <p class="note">💡 Le montant total sera calculé automatiquement selon le nombre de jours et le prix journalier.</p>
+
+        <button type="submit">Enregistrer</button>
+    </form>
+    <a class="back-link" th:href="@{/locations}">← Retour à la liste</a>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

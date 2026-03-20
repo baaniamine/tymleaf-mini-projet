@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des voitures</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f8fafc; }
+        .container { width: 94%; margin: 30px auto; }
+        h2 { color: #1e3a8a; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn { background: #2563eb; color: white; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; }
+        .btn:hover { background: #1d4ed8; }
+        .filter-box { background: white; padding: 16px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+        .filter-box input, .filter-box select, .filter-box button { padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; margin-right: 8px; }
+        .filter-box button { background: #0f172a; color: white; border: none; cursor: pointer; }
+        .filter-box button:hover { background: #1e293b; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.06); }
+        th, td { padding: 14px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+        th { background: #1e3a8a; color: white; }
+        tr:hover { background: #f9fafb; }
+        .action { text-decoration: none; font-weight: bold; margin: 0 6px; }
+        .edit { color: #2563eb; }
+        .delete { color: #dc2626; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .dispo { background: #d1fae5; color: #065f46; }
+        .indispo { background: #fee2e2; color: #991b1b; }
+        .back-link { display: inline-block; margin-top: 18px; text-decoration: none; color: #1e3a8a; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<div th:replace="fragments/menu :: menu"></div>
+<div class="container">
+    <div class="top-bar">
+        <h2>Liste des voitures</h2>
+        <a class="btn" th:href="@{/voitures/new}">+ Ajouter une voiture</a>
+    </div>
+    <div class="filter-box">
+        <form th:action="@{/voitures}" method="get">
+            <input type="text" name="segment" placeholder="Segment (SUV, berline...)" th:value="${segment}">
+            <select name="disponible">
+                <option value="">-- Disponibilité --</option>
+                <option value="true" th:selected="${disponible == true}">Disponible</option>
+                <option value="false" th:selected="${disponible == false}">Indisponible</option>
+            </select>
+            <button type="submit">Filtrer</button>
+            <a th:href="@{/voitures}" style="color:#1e3a8a; text-decoration:none; margin-left:8px;">Réinitialiser</a>
+        </form>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Immatriculation</th>
+            <th>Marque</th>
+            <th>Segment</th>
+            <th>Prix/Jour (MAD)</th>
+            <th>Disponibilité</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${voitures}">
+            <td th:text="${v.id}"></td>
+            <td th:text="${v.immatriculation}"></td>
+            <td th:text="${v.marque}"></td>
+            <td th:text="${v.segment}"></td>
+            <td th:text="${v.prixJour}"></td>
+            <td>
+                <span th:if="${v.disponible}" class="badge dispo">Disponible</span>
+                <span th:unless="${v.disponible}" class="badge indispo">Indisponible</span>
+            </td>
+            <td>
+                <a class="action edit" th:href="@{/voitures/edit/{id}(id=${v.id})}">Modifier</a>
+                <a class="action" th:if="${v.disponible}" style="color:#059669;"
+                   th:href="@{/voitures/disponibilite/{id}(id=${v.id},valeur=false)}"
+                   onclick="return confirm('Marquer comme indisponible ?')">🔒</a>
+                <a class="action" th:unless="${v.disponible}" style="color:#2563eb;"
+                   th:href="@{/voitures/disponibilite/{id}(id=${v.id},valeur=true)}"
+                   onclick="return confirm('Marquer comme disponible ?')">🔓</a>
+                <a class="action delete" th:href="@{/voitures/delete/{id}(id=${v.id})}"
+                   onclick="return confirm('Supprimer cette voiture ?')">Supprimer</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a class="back-link" th:href="@{/}">← Retour à l'accueil</a>
+</div>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
